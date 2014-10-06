@@ -35,7 +35,7 @@ public class BarcodeScanner extends CordovaPlugin {
     private static final String TEXT = "text";
     private static final String DATA = "data";
     private static final String TYPE = "type";
-    private static final String SCAN_INTENT = "la.droid.qr";//"com.phonegap.plugins.barcodescanner.SCAN";
+    private static final String SCAN_INTENT = "la.droid.qr.scan";//"com.phonegap.plugins.barcodescanner.SCAN";
     private static final String ENCODE_DATA = "ENCODE_DATA";
     private static final String ENCODE_TYPE = "ENCODE_TYPE";
     private static final String ENCODE_INTENT = "com.phonegap.plugins.barcodescanner.ENCODE";
@@ -107,12 +107,19 @@ public class BarcodeScanner extends CordovaPlugin {
      * Starts an intent to scan and decode a barcode.
      */
     public void scan() {
-        Intent intentScan = new Intent(SCAN_INTENT);
-        intentScan.addCategory(Intent.CATEGORY_DEFAULT);
-        // avoid calling other phonegap apps
-        intentScan.setPackage(this.cordova.getActivity().getApplicationContext().getPackageName());
+        // Intent intentScan = new Intent(SCAN_INTENT);
+        Intent qrDroid = new Intent(SCAN_INTENT);
+        qrDroid.putExtra( "la.droid.qr.complete" , true);//取得完整掃瞄內容
 
-        this.cordova.startActivityForResult((CordovaPlugin) this, intentScan, REQUEST_CODE);
+
+        // intentScan.addCategory(Intent.CATEGORY_DEFAULT);
+        qrDroid.addCategory(Intent.CATEGORY_DEFAULT);
+
+        // avoid calling other phonegap apps
+        // intentScan.setPackage(this.cordova.getActivity().getApplicationContext().getPackageName());
+
+        // this.cordova.startActivityForResult((CordovaPlugin) this, intentScan, REQUEST_CODE);
+        this.cordova.startActivityForResult((CordovaPlugin) this, qrDroid, REQUEST_CODE);
     }
 
     /**
@@ -129,8 +136,11 @@ public class BarcodeScanner extends CordovaPlugin {
             if (resultCode == Activity.RESULT_OK) {
                 JSONObject obj = new JSONObject();
                 try {
-                    obj.put(TEXT, intent.getStringExtra("SCAN_RESULT"));
-                    obj.put(FORMAT, intent.getStringExtra("SCAN_RESULT_FORMAT"));
+                    // obj.put(TEXT, intent.getStringExtra("SCAN_RESULT"));
+                    // obj.put(FORMAT, intent.getStringExtra("SCAN_RESULT_FORMAT"));
+                    obj.put(TEXT, intent.getStringExtra("la.droid.qr.result"));
+                    obj.put(FORMAT, intent.getStringExtra("la.droid.qr.code"));//這個好像一直沒有值
+
                     obj.put(CANCELLED, false);
                 } catch (JSONException e) {
                     Log.d(LOG_TAG, "This should never happen");
